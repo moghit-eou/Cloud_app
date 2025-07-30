@@ -1,12 +1,12 @@
 msg="$*"
 
-echo "git add started"
+echo "___________started__________"
 git add .
 
-echo "Committing $msg"
+echo "______________Committing $msg ______________"
 
 git commit -m "$msg"
 
-echo "PUSH"
+echo "______PUSHING______"
 git push
 EOF
