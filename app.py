@@ -1,9 +1,11 @@
-from flask import Flask, request, redirect, session, url_for, render_template_string , render_template
+from flask import Flask, request, redirect, session, url_for, render_template_string , render_template , session
 import os
 import json
 import google_auth_oauthlib.flow
 import google.oauth2.credentials
 import googleapiclient.discovery
+from googleapiclient.http import MediaFileUpload
+
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
@@ -12,7 +14,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 CLIENT_SECRETS_FILE = "credentials.json"
-SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
+SCOPES = ['https://www.googleapis.com/auth/drive']
 
 def get_flow():
     print("\n\n ___________function get_flow called______________\n\n")
@@ -43,7 +45,7 @@ def index():
     print("\n\n ____________function index called______________ \n\n")
     if 'credentials' not in session:
         return render_template('login.html')
-        
+
     return redirect(url_for('list_files'))
 
 @app.route('/authorize')
@@ -76,6 +78,33 @@ def list_files():
     results = service.files().list(pageSize=2, fields="*").execute()
     files = results.get('files', [])
     return render_template('list_files.html' , files=files)
+
+
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    if 'credentials' not in session:
+        return redirect(url_for('index'))
+
+    service = get_service()
+    if not hasattr(service, 'files'):
+        return service
+
+    if request.method == 'POST':
+        uploaded_file = request.files['uploaded_file']
+        # here we save the name ( not id not type )
+        uploaded_file.save(uploaded_file.filename)
+        file_metadata = {'name': uploaded_file.filename}
+        media = MediaFileUpload(uploaded_file.filename, resumable=True)
+        service.files().create(
+            body=file_metadata,
+            media_body=media,
+            fields='id'
+        ).execute()
+        return redirect(url_for('list_files'))
+
+    return render_template('upload.html')
+
 
 
 @app.route('/logout')
