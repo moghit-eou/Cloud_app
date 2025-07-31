@@ -42,7 +42,8 @@ def get_service():
 def index():
     print("\n\n ____________function index called______________ \n\n")
     if 'credentials' not in session:
-        return '<a href="/authorize">Login with Google</a>'
+        return render_template('login.html')
+        
     return redirect(url_for('list_files'))
 
 @app.route('/authorize')

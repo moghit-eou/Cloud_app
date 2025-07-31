@@ -1,23 +1,10 @@
-# Ignore virtual environment
 venv/
-
-# Ignore Python environment variables
 .env
-
-# Ignore Google secrets file
 client_secrets.json
-
 credentials.json
-
 *.json
-
-# Ignore system files
 .DS_Store
 Thumbs.db
-
-# Optional: ignore shell scripts if not needed in Git
 push.sh
-
-# __pycache__ folders
 __pycache__/
 *.py[cod]
