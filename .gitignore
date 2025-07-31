@@ -7,6 +7,10 @@ venv/
 # Ignore Google secrets file
 client_secrets.json
 
+credentials.json
+
+*.json
+
 # Ignore system files
 .DS_Store
 Thumbs.db
