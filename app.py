@@ -32,6 +32,12 @@ def credentials_to_dict(credentials):
         'scopes': credentials.scopes
     }
 
+
+def get_service():
+    creds = google.oauth2.credentials.Credentials(**session['credentials'])
+    return googleapiclient.discovery.build('drive', 'v3', credentials=creds)
+
+
 @app.route('/')
 def index():
     print("\n\n ____________function index called______________ \n\n")
@@ -47,6 +53,7 @@ def authorize():
     session['state'] = state
     return redirect(auth_url)
 
+
 @app.route('/oauth_callback')
 def oauth_callback():
     print("\n\n____________function oauth_callback called______________\n\n")
@@ -56,17 +63,19 @@ def oauth_callback():
     session['credentials'] = credentials_to_dict(credentials)
     return redirect(url_for('list_files'))
 
+
 @app.route('/files')
 def list_files():
     print("\n\n____________function list_files called______________\n\n")
+    
     if 'credentials' not in session:
         return redirect(url_for('index'))
-   
-    creds = google.oauth2.credentials.Credentials(**session['credentials'])
-    service = googleapiclient.discovery.build('drive', 'v3', credentials=creds)
+        ## Ensure creds are valide
+    service = get_service()
     results = service.files().list(pageSize=2, fields="*").execute()
     files = results.get('files', [])
     return render_template('list_files.html' , files=files)
+
 
 @app.route('/logout')
 def logout():
