@@ -61,6 +61,7 @@ def list_files():
     print("\n\n____________function list_files called______________\n\n")
     if 'credentials' not in session:
         return redirect(url_for('index'))
+   
     creds = google.oauth2.credentials.Credentials(**session['credentials'])
     service = googleapiclient.discovery.build('drive', 'v3', credentials=creds)
     results = service.files().list(pageSize=10, fields="files(id, name)").execute()
