@@ -5,6 +5,9 @@ import google_auth_oauthlib.flow
 import google.oauth2.credentials
 import googleapiclient.discovery
 from googleapiclient.http import MediaFileUpload
+from io import BytesIO
+from flask import send_file
+
 
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
@@ -105,7 +108,28 @@ def upload():
         os.remove(uploaded_file.filename)  
         return redirect(url_for('list_files'))
 
-    return render_template('upload.html')
+    return render_template('list_files.html')
+
+
+@app.route('/download/<file_id>')
+def download_file(file_id):
+    if 'credentials' not in session:
+        return redirect(url_for('index'))
+    service = get_service()
+    meta = service.files().get(fileId=file_id, fields='name,mimeType').execute()
+    mime = meta['mimeType']
+    if mime.startswith('application/vnd.google-apps'):
+        export_map = {
+            'application/vnd.google-apps.document': 'application/pdf',
+            'application/vnd.google-apps.spreadsheet': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.google-apps.presentation': 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+        }
+        export_mime = export_map.get(mime, 'application/pdf')
+        data = service.files().export(fileId=file_id, mimeType=export_mime).execute()
+    else:
+        data = service.files().get_media(fileId=file_id).execute()
+    buf = BytesIO(data)
+    return send_file(buf, as_attachment=True, download_name=meta['name'], mimetype=export_mime if mime.startswith('application/vnd.google-apps') else mime)
 
 
 
