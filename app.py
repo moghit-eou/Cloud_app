@@ -101,6 +101,8 @@ def upload():
             media_body=media,
             fields='id'
         ).execute()
+        media._fd.close()  
+        os.remove(uploaded_file.filename)  
         return redirect(url_for('list_files'))
 
     return render_template('upload.html')
