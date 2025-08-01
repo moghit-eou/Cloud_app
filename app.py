@@ -145,28 +145,35 @@ def search():
         print(f"Search error: {e}")
         return jsonify({'error': 'Search failed'}), 500
 
-@app.route('/home')
-def home_page():
-    print("\n\n____________function list_files called______________\n\n")
-    
+@app.route('/home', defaults={'folder_id': None})
+@app.route('/home/<folder_id>')
+
+def home_page(folder_id):
     if 'credentials' not in session:
         return redirect(url_for('index'))
-        ## Ensure creds are valide
     service = get_service()
 
-    results = service.files().list(pageSize=5, 
-    fields="*" ,
-    q = "trashed=false"
-    ).execute()    
-    files = results.get('files', [])
+    # decide which folder to show; None → root
+    parent = folder_id if folder_id else 'root'
 
-    results = service.files().list(pageSize=3, fields="*",
-    q ="mimeType='application/vnd.google-apps.folder'"
+    # list *all* items in that folder
+    resp = service.files().list(
+        q=f"'{parent}' in parents and trashed=false",
+        fields="*",
+        pageSize=100
     ).execute()
-    folders = results.get('files', [])
+    items = resp.get('files', [])
+
+    # split into folders vs files
+    folders = [f for f in items if f['mimeType']=='application/vnd.google-apps.folder']
+    files   = [f for f in items if f['mimeType']!='application/vnd.google-apps.folder']
+
+    return render_template('home.html',
+                            files=files,
+                            folders=folders,
+                            current_folder=parent)
 
 
-    return render_template('home.html' , files=files , folders=folders)
 
 
 
