@@ -15,6 +15,7 @@
 
             <a href="{{ file.webViewLink }}" target="_blank">View file</a>
             <a href="{{ url_for('download_file', file_id=file.id) }}">Download</a>
+            <a href="{{ url_for('delete_file',   file_id=file.id) }}">Delete</a>
 
         </li>
 

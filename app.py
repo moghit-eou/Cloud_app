@@ -36,8 +36,6 @@ def credentials_to_dict(credentials):
         'client_secret': credentials.client_secret,
         'scopes': credentials.scopes
     }
-
-
 def get_service():
     creds = google.oauth2.credentials.Credentials(**session['credentials'])
     return googleapiclient.discovery.build('drive', 'v3', credentials=creds)
@@ -49,7 +47,7 @@ def index():
     if 'credentials' not in session:
         return render_template('login.html')
 
-    return redirect(url_for('list_files'))
+    return redirect(url_for('home_page'))
 
 @app.route('/authorize')
 def authorize():
@@ -67,20 +65,25 @@ def oauth_callback():
     flow.fetch_token(authorization_response=request.url)
     credentials = flow.credentials
     session['credentials'] = credentials_to_dict(credentials)
-    return redirect(url_for('list_files'))
+    return redirect(url_for('home_page'))
 
 
-@app.route('/files')
-def list_files():
+@app.route('/home')
+def home_page():
     print("\n\n____________function list_files called______________\n\n")
     
     if 'credentials' not in session:
         return redirect(url_for('index'))
         ## Ensure creds are valide
     service = get_service()
-    results = service.files().list(pageSize=2, fields="*").execute()
+    results = service.files().list(pageSize=5, 
+    fields="*" ,
+    q = "trashed=false"
+    ).execute()
+    
+    
     files = results.get('files', [])
-    return render_template('list_files.html' , files=files)
+    return render_template('home.html' , files=files)
 
 
 
@@ -106,10 +109,22 @@ def upload():
         ).execute()
         media._fd.close()  
         os.remove(uploaded_file.filename)  
-        return redirect(url_for('list_files'))
+        return redirect(url_for('home_page'))
 
-    return render_template('list_files.html')
+    return render_template('home.html')
 
+@app.route('/delete/<file_id>')
+def delete_file(file_id):
+    if 'credentials' not in session:
+        return redirect(url_for('index'))
+
+    print("\n\n____________function delete_file called______________\n\n")
+    service = get_service()
+    service.files().update(
+        fileId=file_id,
+        body={'trashed': True}
+    ).execute()
+    return redirect(url_for('home_page'))
 
 @app.route('/download/<file_id>')
 def download_file(file_id):
@@ -129,7 +144,12 @@ def download_file(file_id):
     else:
         data = service.files().get_media(fileId=file_id).execute()
     buf = BytesIO(data)
-    return send_file(buf, as_attachment=True, download_name=meta['name'], mimetype=export_mime if mime.startswith('application/vnd.google-apps') else mime)
+    return send_file(buf, as_attachment=True ,
+      download_name=meta['name'],
+      mimetype=export_mime 
+      if mime.startswith('application/vnd.google-apps') else mime)
+
+
 
 
 
