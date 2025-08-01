@@ -35,6 +35,9 @@
       </div>
 
       <h2>Folders</h2>
+
+      <a href="{{ url_for('home_page') }}" class="home-page-button">Home</a>
+
       <ul class="folders-list">
         {% for folder in folders %}
           <li>
@@ -48,7 +51,6 @@
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
-      <h2>Files</h2>
       <ul class="files-grid">
         {% for file in files %}
           <li class="file-card">
