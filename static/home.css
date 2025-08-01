@@ -1,0 +1,181 @@
+#suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 5px 5px;
+  max-height: 400px;
+  overflow-y: auto;
+  display: none;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* dashboard.css */
+
+/* reset & box-sizing */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* BODY & FONT */
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  color: #333;
+  line-height: 1.4;
+}
+
+/* ─── HEADER ─── */
+.dashboard-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #eee;
+}
+
+/* search container */
+.dashboard-header .search-container {
+  position: relative;
+}
+.dashboard-header .search-container input[type="text"] {
+  width: 260px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+/* filter icon (FontAwesome, SVG or your own) */
+.dashboard-header .search-container .filter-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  color: #666;
+}
+
+/* ─── BODY LAYOUT ─── */
+.dashboard-body {
+  display: flex;
+  min-height: calc(100vh - 72px); /* adjust if header height changes */
+}
+
+/* ─── SIDEBAR (FOLDERS + UPLOAD) ─── */
+.sidebar {
+  width: 240px;
+  padding: 20px;
+  background: #ffffff;
+  border-right: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+}
+
+/* upload button above folders */
+.upload-container {
+  margin-bottom: 20px;
+}
+.upload-container button,
+.upload-container input[type="file"] + button {
+  width: 100%;
+  padding: 10px;
+  font-size: 15px;
+  border: none;
+  border-radius: 4px;
+  background: #4285f4;
+  color: white;
+  cursor: pointer;
+}
+.upload-container button:hover {
+  background: #357ae8;
+}
+
+/* folder list */
+.folders-list {
+  list-style: none;
+  flex: 1; /* grow to fill sidebar */
+  overflow-y: auto;
+}
+.folders-list li + li {
+  margin-top: 10px;
+}
+.folders-list a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #333;
+  padding: 6px;
+  border-radius: 4px;
+}
+.folders-list a:hover {
+  background: #f0f0f0;
+  color: #4285f4;
+}
+
+/* ─── MAIN CONTENT (FILES) ─── */
+.main-content {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* grid of file-cards */
+.files-grid {
+  width: 100%;
+  max-width: 1000px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  list-style: none;
+}
+
+/* individual file card */
+.file-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.file-card h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+.file-card .meta {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 12px;
+}
+.file-card .actions {
+  display: flex;
+  gap: 8px;
+}
+.file-card .actions a {
+  flex: 1;
+  text-align: center;
+  padding: 8px 0;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 14px;
+  color: white;
+}
+.file-card .view     { background: #4285f4; }
+.file-card .download { background: #34a853; }
+.file-card .delete   { background: #ea4335; }
+.file-card .view:hover     { background: #357ae8; }
+.file-card .download:hover { background: #2a8e46; }
+.file-card .delete:hover   { background: #c5332a; }

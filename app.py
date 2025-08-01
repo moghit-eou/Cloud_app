@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, session, url_for, render_template_string , render_template , session
+from flask import Flask, request, redirect, session, url_for, render_template_string , render_template , session , jsonify
 import os
 import json
 import google_auth_oauthlib.flow
@@ -39,6 +39,29 @@ def credentials_to_dict(credentials):
 def get_service():
     creds = google.oauth2.credentials.Credentials(**session['credentials'])
     return googleapiclient.discovery.build('drive', 'v3', credentials=creds)
+ 
+
+def get_folder_path(service, file_id, folder_cache={}):
+    """Get the full path of a file/folder by traversing parent folders"""
+    if file_id in folder_cache:
+        return folder_cache[file_id]
+    
+    try:
+        file_meta = service.files().get(fileId=file_id, fields='name,parents').execute()
+        file_name = file_meta.get('name', '')
+        parents = file_meta.get('parents', [])
+        
+        if not parents:
+            folder_cache[file_id] = file_name
+            return file_name
+        
+        parent_path = get_folder_path(service, parents[0], folder_cache)
+        full_path = f"{parent_path}/{file_name}" if parent_path else file_name
+        folder_cache[file_id] = full_path
+        return full_path
+    except:
+        return "Unknown"
+
 
 
 @app.route('/')
@@ -68,6 +91,60 @@ def oauth_callback():
     return redirect(url_for('home_page'))
 
 
+@app.route('/search')
+def search():
+    """Real-time search endpoint"""
+    if 'credentials' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    query = request.args.get('q', '').strip()
+    if not query:
+        return jsonify([])
+    
+    try:
+        service = get_service()
+        
+        # Search for files and folders that contain the query in their name
+        search_query = f"name contains '{query}' and trashed=false"
+        
+        results = service.files().list(
+            q=search_query,
+            pageSize=20,
+            fields="files(id,name,mimeType,parents,webViewLink)"
+        ).execute()
+        
+        files = results.get('files', [])
+        suggestions = []
+        
+        for file in files:
+            # Get the full path for each file/folder
+            full_path = get_folder_path(service, file['id'])
+            
+            # Determine if it's a folder or file
+            is_folder = file['mimeType'] == 'application/vnd.google-apps.folder'
+            
+            suggestions.append({
+                'id': file['id'],
+                'name': file['name'],
+                'path': full_path,
+                'type': 'folder' if is_folder else 'file',
+                'webViewLink': file.get('webViewLink', ''),
+                'downloadLink': url_for('download_file', file_id=file['id']) if not is_folder else None,
+                'deleteLink': url_for('delete_file', file_id=file['id'])
+            })
+        
+        # Sort by relevance (exact matches first, then by name)
+        suggestions.sort(key=lambda x: (
+            not x['name'].lower().startswith(query.lower()),
+            x['name'].lower()
+        ))
+        
+        return jsonify(suggestions)
+    
+    except Exception as e:
+        print(f"Search error: {e}")
+        return jsonify({'error': 'Search failed'}), 500
+
 @app.route('/home')
 def home_page():
     print("\n\n____________function list_files called______________\n\n")
@@ -76,14 +153,20 @@ def home_page():
         return redirect(url_for('index'))
         ## Ensure creds are valide
     service = get_service()
+
     results = service.files().list(pageSize=5, 
     fields="*" ,
     q = "trashed=false"
-    ).execute()
-    
-    
+    ).execute()    
     files = results.get('files', [])
-    return render_template('home.html' , files=files)
+
+    results = service.files().list(pageSize=3, fields="*",
+    q ="mimeType='application/vnd.google-apps.folder'"
+    ).execute()
+    folders = results.get('files', [])
+
+
+    return render_template('home.html' , files=files , folders=folders)
 
 
 
