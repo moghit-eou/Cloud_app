@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, session, url_for, render_template_string , render_template , session , jsonify
+from flask import Flask, request, redirect, session, url_for, render_template_string , render_template , session , jsonify , flash
 import os
 import json
 import google_auth_oauthlib.flow
@@ -261,6 +261,39 @@ def add_folder():
     service.files().create(body=metadata, fields='id').execute()
     return redirect(url_for('home_page', folder_id=parent_id))
 
+
+@app.route('/delete_folder/<folder_id>')
+def delete_folder(folder_id):
+    if 'credentials' not in session:
+        return redirect(url_for('index'))
+
+    service = get_service()
+    # move the folder to trash
+    service.files().update(
+        fileId=folder_id,
+        body={'trashed': True}
+    ).execute()
+
+    # read parent_id to know where to redirect
+    parent = request.args.get('parent_id')
+    return redirect(url_for('home_page', folder_id=parent))
+
+
+@app.route('/rename_folder/<folder_id>', methods=['POST'])
+def rename_folder(folder_id):
+    if 'credentials' not in session:
+        return redirect(url_for('index'))
+    new_name = request.form.get('new_name', '').strip()
+    if not new_name:
+        flash('Folder name cannot be empty', 'warning')
+        return redirect(request.referrer or url_for('home_page'))
+    service = get_service()
+    service.files().update(fileId=folder_id, body={'name': new_name}).execute()
+    flash(f'Folder renamed to "{new_name}"', 'success')
+    parent = request.form.get('parent_id')
+    if parent:
+        return redirect(url_for('home_page', folder_id=parent))
+    return redirect(url_for('home_page'))
 
 
 
