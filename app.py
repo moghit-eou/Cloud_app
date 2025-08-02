@@ -24,7 +24,6 @@ def get_flow():
         CLIENT_SECRETS_FILE, scopes=SCOPES)
     flow.redirect_uri = url_for('oauth_callback', _external=True)
     return flow
-
 def credentials_to_dict(credentials):
     return {
         'token': credentials.token,
@@ -37,8 +36,6 @@ def credentials_to_dict(credentials):
 def get_service():
     creds = google.oauth2.credentials.Credentials(**session['credentials'])
     return googleapiclient.discovery.build('drive', 'v3', credentials=creds)
- 
-
 def get_folder_path(service, file_id, folder_cache={}):
     """Get the full path of a file/folder by traversing parent folders"""
     if file_id in folder_cache:
@@ -169,10 +166,6 @@ def home_page(folder_id):
                             folders=folders,
                             current_folder=parent)
 
-
-
-
-
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if 'credentials' not in session:
@@ -247,6 +240,26 @@ def download_file(file_id):
       mimetype=export_mime 
       if mime.startswith('application/vnd.google-apps') else mime)
 
+
+@app.route('/add_folder', methods=['POST'])
+def add_folder():
+    if 'credentials' not in session:
+        return redirect(url_for('home'))
+
+    service   = get_service()
+    parent_id = request.args.get('parent_id') or 'root'
+    folder_name = request.form.get('folder_name', '').strip()
+    if not folder_name:
+        return redirect(url_for('home_page', folder_id=parent_id))
+
+    metadata = {
+        'name':     folder_name,
+        'mimeType': 'application/vnd.google-apps.folder',
+        'parents':  [parent_id]
+    }
+
+    service.files().create(body=metadata, fields='id').execute()
+    return redirect(url_for('home_page', folder_id=parent_id))
 
 
 

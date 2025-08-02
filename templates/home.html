@@ -24,7 +24,7 @@
 
         <!-- SIDEBAR -->
         <aside class="sidebar">
-
+            
 
 
 
@@ -54,7 +54,13 @@
                 </div>
             </div>
 
-
+            
+            <div class="add-folder-container">
+                <form id="addFolderForm" action="{{ url_for('add_folder') }}?parent_id={{ current_folder }}" method="post">
+                    <input type="text" name="folder_name" placeholder="New folder name" required>
+                    <button type="submit">Add Folder</button>
+                </form>
+            </div>
 
 
 
