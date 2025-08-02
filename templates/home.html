@@ -31,13 +31,28 @@
 
             <!-- Upload -->
             <div class="upload-container">
-                <form action="{{ url_for('upload') }}?folder_id={{current_folder}}" method="post" enctype="multipart/form-data">
+
+                <!-- 1) placeholder for the styled error message -->
+                <div id="uploadError" class="upload-error"></div>
+
+                <!-- 2) the form must have id="uploadForm" -->
+                <form id="uploadForm" action="{{ url_for('upload') }}?folder_id={{ current_folder }}" method="post"
+                    enctype="multipart/form-data">
                     <input type="file" id="uploaded_file" name="uploaded_file">
                     <button type="submit">Upload</button>
                 </form>
+
+                <!-- 3) your validation script -->
+                <link rel="stylesheet" href="{{ url_for('static', filename='upload_error.css') }}">
+                <script src="{{ url_for('static', filename='upload_error.js') }}"></script>
             </div>
 
-
+            <div id="errorModal" class="modal">
+                <div class="modal-content">
+                    <span id="closeModal" class="close">&times;</span>
+                    <p id="modalMessage">🚨 Please choose a file before uploading.</p>
+                </div>
+            </div>
 
 
 
@@ -55,7 +70,7 @@
             </a>
 
             <!-- If you’re in a subfolder, show an “Up” link -->
-        
+
             <!-- Folder list -->
             <ul class="folders-list">
                 {% for folder in folders %}
@@ -64,7 +79,7 @@
                     <a href="{{ url_for('home_page', folder_id=folder.id) }}" class="folder-link">
                         📁 {{ folder.name }}
                     </a>
-                    
+
                 </li>
                 {% endfor %}
             </ul>
@@ -79,12 +94,13 @@
                 <li class="file-card">
                     <h3>{{ file.name }}</h3>
                     <div class="meta">
-                      Size: {{ (file.size | default(0) | int / (1024*1024)) | round(3) }} MB
+                        Size: {{ (file.size | default(0) | int / (1024*1024)) | round(3) }} MB
                     </div>
                     <div class="actions">
                         <a class="view" href="{{ file.webViewLink }}" target="_blank">View</a>
                         <a class="download" href="{{ url_for('download_file', file_id=file.id) }}">Download</a>
-                        <a class="delete" href="{{ url_for('delete_file',   file_id=file.id) }}?folder_id={{current_folder}} ">Delete</a>
+                        <a class="delete"
+                            href="{{ url_for('delete_file',   file_id=file.id) }}?folder_id={{current_folder}} ">Delete</a>
                     </div>
                 </li>
                 {% endfor %}
