@@ -152,14 +152,12 @@ def home_page(folder_id):
         return redirect(url_for('index'))
     service = get_service()
 
-    print("\n\n____________function home_page called______________\n\n")
 
     # decide which folder to show; None → root
     parent = folder_id if folder_id else 'root'
 
 
-    print("\n\n")
-    # list *all* items in that folder
+     # list *all* items in that folder
     resp = service.files().list(
         q=f"'{parent}' in parents and trashed=false",
         fields="*",
@@ -171,7 +169,6 @@ def home_page(folder_id):
     folders = [f for f in items if f['mimeType']=='application/vnd.google-apps.folder']
     files   = [f for f in items if f['mimeType']!='application/vnd.google-apps.folder']
 
-    print("\n\nfolders: ", folders)
     return render_template('home.html',
                             files=files,
                             folders=folders,
