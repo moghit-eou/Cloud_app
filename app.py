@@ -20,14 +20,12 @@ CLIENT_SECRETS_FILE = "credentials.json"
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
 def get_flow():
-    print("\n\n ___________function get_flow called______________\n\n")
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE, scopes=SCOPES)
     flow.redirect_uri = url_for('oauth_callback', _external=True)
     return flow
 
 def credentials_to_dict(credentials):
-    print("\n\n ___________function credentials_to_dict called______________\n\n")
     return {
         'token': credentials.token,
         'refresh_token': credentials.refresh_token,
@@ -66,7 +64,6 @@ def get_folder_path(service, file_id, folder_cache={}):
 
 @app.route('/')
 def index():
-    print("\n\n ____________function index called______________ \n\n")
     if 'credentials' not in session:
         return render_template('login.html')
 
@@ -74,7 +71,6 @@ def index():
 
 @app.route('/authorize')
 def authorize():
-    print("\n\n____________function authorize called______________\n\n")
     flow = get_flow()
     auth_url, state = flow.authorization_url(access_type='offline', include_granted_scopes='true')
     session['state'] = state
@@ -83,7 +79,6 @@ def authorize():
 
 @app.route('/oauth_callback')
 def oauth_callback():
-    print("\n\n____________function oauth_callback called______________\n\n")
     flow = get_flow()
     flow.fetch_token(authorization_response=request.url)
     credentials = flow.credentials
@@ -187,29 +182,30 @@ def upload():
     if not hasattr(service, 'files'):
         return service
 
-    if request.method == 'POST':
-        uploaded_file = request.files['uploaded_file']
-        # here we save the name ( not id not type )
-        uploaded_file.save(uploaded_file.filename)
-        file_metadata = {'name': uploaded_file.filename}
-        media = MediaFileUpload(uploaded_file.filename, resumable=True)
-        service.files().create(
-            body=file_metadata,
-            media_body=media,
-            fields='id'
-        ).execute()
-        media._fd.close()  
-        os.remove(uploaded_file.filename)  
+
+    uploaded_file = request.files['uploaded_file']
+    
+    if not uploaded_file:
         return redirect(url_for('home_page'))
 
-    return render_template('home.html')
+    uploaded_file.save(uploaded_file.filename)
+    file_metadata = {'name': uploaded_file.filename}
+    
+    media = MediaFileUpload(uploaded_file.filename, resumable=True)
+    service.files().create(
+        body=file_metadata,
+        media_body=media,
+        fields='id'
+    ).execute()
+    media._fd.close()  
+    os.remove(uploaded_file.filename)  
+    return redirect(url_for('home_page'))
 
 @app.route('/delete/<file_id>')
 def delete_file(file_id):
     if 'credentials' not in session:
         return redirect(url_for('index'))
 
-    print("\n\n____________function delete_file called______________\n\n")
     service = get_service()
     service.files().update(
         fileId=file_id,
@@ -251,7 +247,6 @@ def download_file(file_id):
 
 @app.route('/logout')
 def logout():
-    print("\n\n____________function logout called______________\n\n")
     session.clear()
     return redirect(url_for('index'))
 
