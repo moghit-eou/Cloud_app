@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         uploadError.classList.remove('show');
         setTimeout(() => {
             uploadError.innerHTML = '';
-        }, 300);
+        }, 3000);
     }
 
     // Hide modal with animation
