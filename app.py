@@ -147,15 +147,18 @@ def search():
 
 @app.route('/home', defaults={'folder_id': None})
 @app.route('/home/<folder_id>')
-
 def home_page(folder_id):
     if 'credentials' not in session:
         return redirect(url_for('index'))
     service = get_service()
 
+    print("\n\n____________function home_page called______________\n\n")
+
     # decide which folder to show; None → root
     parent = folder_id if folder_id else 'root'
 
+
+    print("\n\n")
     # list *all* items in that folder
     resp = service.files().list(
         q=f"'{parent}' in parents and trashed=false",
@@ -168,6 +171,7 @@ def home_page(folder_id):
     folders = [f for f in items if f['mimeType']=='application/vnd.google-apps.folder']
     files   = [f for f in items if f['mimeType']!='application/vnd.google-apps.folder']
 
+    print("\n\nfolders: ", folders)
     return render_template('home.html',
                             files=files,
                             folders=folders,
@@ -214,6 +218,11 @@ def delete_file(file_id):
         fileId=file_id,
         body={'trashed': True}
     ).execute()
+
+    folder_id = request.args.get('folder_id')
+    if folder_id:
+        return redirect(url_for('home_page',folder_id=folder_id))
+
     return redirect(url_for('home_page'))
 
 @app.route('/download/<file_id>')

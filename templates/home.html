@@ -41,12 +41,7 @@
             </a>
 
             <!-- If you’re in a subfolder, show an “Up” link -->
-            {% if current_folder %}
-            <a href="{{ url_for('home_page') }}" class="up-button">
-                ⬆️ Up to root
-            </a>
-            {% endif %}
-
+        
             <!-- Folder list -->
             <ul class="folders-list">
                 {% for folder in folders %}
@@ -75,7 +70,7 @@
                     <div class="actions">
                         <a class="view" href="{{ file.webViewLink }}" target="_blank">View</a>
                         <a class="download" href="{{ url_for('download_file', file_id=file.id) }}">Download</a>
-                        <a class="delete" href="{{ url_for('delete_file',   file_id=file.id) }}">Delete</a>
+                        <a class="delete" href="{{ url_for('delete_file',   file_id=file.id) }}?folder_id={{current_folder}} ">Delete</a>
                     </div>
                 </li>
                 {% endfor %}
