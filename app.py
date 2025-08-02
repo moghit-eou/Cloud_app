@@ -184,13 +184,19 @@ def upload():
 
 
     uploaded_file = request.files['uploaded_file']
+
     
     if not uploaded_file:
         return redirect(url_for('home_page'))
 
     uploaded_file.save(uploaded_file.filename)
-    file_metadata = {'name': uploaded_file.filename}
     
+    file_metadata = {'name': uploaded_file.filename}
+    folder_id = request.args.get('folder_id')
+    
+    if folder_id:
+        file_metadata['parents'] = [folder_id]
+
     media = MediaFileUpload(uploaded_file.filename, resumable=True)
     service.files().create(
         body=file_metadata,
@@ -199,7 +205,7 @@ def upload():
     ).execute()
     media._fd.close()  
     os.remove(uploaded_file.filename)  
-    return redirect(url_for('home_page'))
+    return redirect(url_for('home_page' , folder_id =folder_id))
 
 @app.route('/delete/<file_id>')
 def delete_file(file_id):
