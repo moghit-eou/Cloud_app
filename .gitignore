@@ -1,0 +1,10 @@
+venv/
+.env
+client_secrets.json
+credentials.json
+.DS_Store
+Thumbs.db
+push.sh
+__pycache__/
+*.py[cod]
+temp_creds.json
