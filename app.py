@@ -314,7 +314,7 @@ def rename_folder(folder_id):
     service.files().update(fileId=folder_id, body={'name': new_name}).execute()
     flash(f'Folder renamed to "{new_name}"', 'success')
     parent = request.form.get('parent_id')
-    if parent:
+    if parent: 
         return redirect(url_for('home_page', folder_id=parent))
     return redirect(url_for('home_page'))
 
