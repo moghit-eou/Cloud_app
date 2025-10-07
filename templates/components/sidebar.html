@@ -1,0 +1,38 @@
+<aside class="sidebar">
+    <div class="upload-container">
+        <div id="uploadError" class="upload-error"></div>
+
+        <form id="uploadForm" action="{{ url_for('upload') }}?folder_id={{ current_folder }}" method="post"
+            enctype="multipart/form-data">
+            <input type="file" id="uploaded_file" name="uploaded_file">
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <span id="closeModal" class="close">&times;</span>
+            <p id="modalMessage">🚨 Please choose a file before uploading.</p>
+        </div>
+    </div>
+
+    <div class="add-folder-container">
+        <form id="addFolderForm" action="{{ url_for('add_folder') }}?parent_id={{ current_folder }}" method="post">
+            <input type="text" name="folder_name" placeholder="New folder name" required>
+            <button type="submit">Add Folder</button>
+        </form>
+    </div>
+
+    <h2>Folders</h2>
+
+    <a href="{{ url_for('home_page') }}" class="home-page-button">🏠 Home</a>
+
+    <ul class="folders-list">
+        {% for folder in folders %}
+        <li>
+            <a href="{{ url_for('home_page', folder_id=folder.id) }}" class="folder-link">📁 {{ folder.name }}</a>
+            {% include "components/folder_actions.html" %}
+        </li>
+        {% endfor %}
+    </ul>
+</aside>
