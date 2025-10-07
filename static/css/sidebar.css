@@ -1,0 +1,218 @@
+/* Enhanced Sidebar */
+.sidebar {
+    width: 280px;
+    background: white;
+    border-right: 1px solid var(--border-color);
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Upload Container Styling */
+.upload-container {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.upload-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.upload-container input[type="file"] {
+    padding: 0.75rem;
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 0.9rem;
+}
+
+.upload-container button {
+    padding: 0.875rem 1.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-md);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.upload-container button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Upload Error Styling */
+.upload-error {
+    margin-bottom: 1rem;
+}
+
+/* Modal Styling */
+#errorModal.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+#errorModal .modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    width: 80%;
+    max-width: 400px;
+    box-shadow: var(--shadow-lg);
+}
+
+#errorModal .close {
+    color: var(--text-muted);
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#errorModal .close:hover,
+#errorModal .close:focus {
+    color: var(--text-primary);
+}
+
+/* Add Folder Container */
+.add-folder-container {
+    margin: 1.5rem 0;
+}
+
+.add-folder-container form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.add-folder-container input[type="text"] {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+}
+
+.add-folder-container input[type="text"]:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.add-folder-container button[type="submit"] {
+    padding: 0.6rem 1.2rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.add-folder-container button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Sidebar Headings */
+.sidebar h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+/* Home Button */
+.home-page-button {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    margin-bottom: 1rem;
+    background: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--text-primary);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.home-page-button:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateX(4px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Folders List */
+.folders-list {
+    list-style: none;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.folders-list li {
+    margin-bottom: 0.5rem;
+}
+
+.folder-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+    font-weight: 500;
+    border: 1px solid transparent;
+}
+
+.folder-link:hover {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    color: var(--primary-color);
+    transform: translateX(4px);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .add-folder-container form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .add-folder-container button[type="submit"] {
+        width: 100%;
+    }
+}

@@ -1,0 +1,125 @@
+/* Header Styling */
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Enhanced Search Container */
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-right: 1rem;
+}
+
+.search-input {
+    width: 320px;
+    padding: 0.75rem 3rem 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    font-size: 0.95rem;
+    background: white;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    transform: translateY(-1px);
+}
+
+.filter-icon {
+    position: absolute;
+    right: 1rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s ease;
+    font-size: 1.1rem;
+}
+
+.filter-icon:hover {
+    color: var(--primary-color);
+}
+
+/* Suggestions Dropdown */
+#suggestions {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    max-height: 300px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1000;
+    box-shadow: var(--shadow-lg);
+}
+
+/* Filtering Section */
+.Filtering form {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.Filtering select,
+.Filtering button {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    background: #fff;
+    cursor: pointer;
+}
+
+.Filtering button {
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+}
+
+.Filtering button:hover {
+    background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .search-input {
+        width: 250px;
+    }
+
+    .Filtering form {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .Filtering select,
+    .Filtering button {
+        flex: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-input {
+        width: 200px;
+    }
+}
