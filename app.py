@@ -21,17 +21,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
 
 if not app.secret_key:
-    print("CWD:", os.getcwd())
-    print(".env exists:", os.path.exists(".env"))
-    print("Key present:", "FLASK_SECRET_KEY" in os.environ)
-    print("Value:", os.getenv("FLASK_SECRET_KEY"))
-    print () 
-    print (app.secret_key)
-    print () 
-    print ( 'not detected' ) 
     raise ValueError("LOL FLASK_SECRET_KEY env var not set FIX IT lol")
-    print () 
-    print () 
 
 app.config.update(
     SESSION_COOKIE_SECURE=True,
