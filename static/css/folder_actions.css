@@ -14,6 +14,7 @@
   transform: translateY(-50%);
   z-index: 5;
 }
+
 .folder-actions summary {
   list-style: none;
   cursor: pointer;
@@ -22,6 +23,7 @@
   user-select: none;
   padding: 0.2em;
 }
+
 .folder-actions summary::-webkit-details-marker {
   display: none;
 }
@@ -30,6 +32,7 @@
 .folder-actions[open] .action-list {
   display: block;
 }
+
 .action-list {
   display: none;
   position: absolute;
@@ -41,11 +44,16 @@
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 4px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   min-width: 140px;
   z-index: 100;
 }
-.action-list li { margin: 0; padding: 0; }
+
+.action-list li {
+  margin: 0;
+  padding: 0;
+}
+
 .action-list a,
 .action-list button {
   display: block;
@@ -60,14 +68,17 @@
   font-size: 0.95rem;
   transition: background-color 0.2s;
 }
+
 .action-list a:hover,
 .action-list button:hover {
   background: #f5f5f5;
 }
+
 .action-list li:first-child a,
 .action-list li:first-child button {
   border-radius: 4px 4px 0 0;
 }
+
 .action-list li:last-child a,
 .action-list li:last-child button {
   border-radius: 0 0 4px 4px;
@@ -78,9 +89,10 @@
 .action-list .rename-btn {
   color: #e74c3c;
 }
+
 .action-list a[href*="delete_folder"]:hover,
 .action-list .rename-btn:hover {
-  background: rgba(231,76,60,0.1);
+  background: rgba(231, 76, 60, 0.1);
 }
 
 /* Modal backdrop & centering */
@@ -88,11 +100,12 @@
   display: none;
   position: fixed;
   inset: 0;
-  background-color: rgba(0,0,0,0.6);
+  background-color: rgba(0, 0, 0, 0.6);
   z-index: 2000;
   align-items: center;
   justify-content: center;
 }
+
 .modal.show {
   display: flex;
 }
@@ -104,13 +117,21 @@
   border-radius: 8px;
   width: 400px;
   max-width: 90%;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   border-top: 4px solid #e74c3c;
   animation: fadeIn 0.3s ease-out;
 }
+
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .modal-content h3 {
@@ -122,13 +143,17 @@
 }
 
 /* Form styles */
-.form-group { margin-bottom: 15px; }
+.form-group {
+  margin-bottom: 15px;
+}
+
 .form-group label {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
   color: #555;
 }
+
 .form-group input[type="text"] {
   width: 100%;
   padding: 8px 12px;
@@ -136,10 +161,11 @@
   border-radius: 4px;
   box-sizing: border-box;
 }
+
 .form-group input[type="text"]:focus {
   outline: none;
   border-color: #e74c3c;
-  box-shadow: 0 0 0 2px rgba(231,76,60,0.2);
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
 }
 
 /* Form buttons */
@@ -148,6 +174,7 @@
   justify-content: flex-end;
   gap: 10px;
 }
+
 .form-buttons button {
   padding: 8px 16px;
   border: none;
@@ -156,17 +183,21 @@
   font-size: 14px;
   transition: background-color 0.2s;
 }
+
 .cancel-btn {
   background-color: #bdc3c7;
   color: #2c3e50;
 }
+
 .cancel-btn:hover {
   background-color: #95a5a6;
 }
+
 .rename-submit-btn {
   background-color: #e74c3c;
   color: #fff;
 }
+
 .rename-submit-btn:hover {
   background-color: #c0392b;
 }

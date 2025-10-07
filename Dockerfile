@@ -8,5 +8,7 @@ EXPOSE 8080
 CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
 
 
-# docker build -t drive_application_v2 .
+# docker  build -t drive_application_v2 
 # docker run -p 8080:8080 drive_application_v2
+
+

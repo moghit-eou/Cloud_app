@@ -3,157 +3,29 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Home Page</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='_folder_actions.css') }}">
+    <title>Localhost running </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/folder_actions.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/upload_error.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main_content.css') }}">
+
+
+
 </head>
 
 <body>
+    {% include "components/header.html" %}
 
-    <!-- HEADER / SEARCH -->
-    <header class="dashboard-header">
-        <div class="search-container">
-            <input id="searchBox" class="search-input" type="text" placeholder="Search files and folders..."
-                autocomplete="off">
-            <i class="filter-icon fas fa-filter"></i>
-            <div id="suggestions"></div>
-        </div>
-
-        <div class="Filtering">
-            <form method="get" action="{{ url_for('home_page', folder_id=current_folder) }}">
-                <label>
-                    Type:
-                    <select name="type">
-                        {% set t = wanted_type or 'all' %}
-                        <option value="all" {{ 'selected' if t=='all' }}>All</option>
-                        <option value="image" {{ 'selected' if t=='image' }}>Images</option>
-                        <option value="video" {{ 'selected' if t=='video' }}>Videos</option>
-                        <option value="pdf" {{ 'selected' if t=='pdf' }}>PDF</option>
-                        <option value="doc" {{ 'selected' if t=='doc' }}>Doc</option>
-                        <option value="excel" {{ 'selected' if t=='excel' }}>Excel</option>
-                        <option value="ppt" {{ 'selected' if t=='ppt' }}>PPT</option>
-                        <option value="audio" {{ 'selected' if t=='audio' }}>Audio</option>
-                        <option value="text" {{ 'selected' if t=='text' }}>Text</option>
-                        <option value="archive" {{ 'selected' if t=='archive' }}>Archive</option>
-                        <option value="other" {{ 'selected' if t=='other' }}>Other</option>
-                    </select>
-                </label>
-
-                <label>
-                    Sort:
-                    <select name="sort">
-                        <option value="name" {{ 'selected' if (sort_by or 'name' )=='name' }}>Name</option>
-                        <option value="type" {{ 'selected' if sort_by=='type' }}>Type</option>
-                    </select>
-                </label>
-
-                <button type="submit">Apply</button>
-            </form>
-        </div>
-
-
-    </header>
-
-    <!-- BODY: SIDEBAR + MAIN -->
     <div class="dashboard-body">
-
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
-
-
-
-
-
-            <!-- Upload -->
-            <div class="upload-container">
-
-                <!-- 1) placeholder for the styled error message -->
-                <div id="uploadError" class="upload-error"></div>
-
-                <!-- 2) the form must have id="uploadForm" -->
-                <form id="uploadForm" action="{{ url_for('upload') }}?folder_id={{ current_folder }}" method="post"
-                    enctype="multipart/form-data">
-                    <input type="file" id="uploaded_file" name="uploaded_file">
-                    <button type="submit">Upload</button>
-                </form>
-
-                <!-- 3) your validation script -->
-                <link rel="stylesheet" href="{{ url_for('static', filename='upload_error.css') }}">
-                <script src="{{ url_for('static', filename='upload_error.js') }}"></script>
-            </div>
-
-            <div id="errorModal" class="modal">
-                <div class="modal-content">
-                    <span id="closeModal" class="close">&times;</span>
-                    <p id="modalMessage">🚨 Please choose a file before uploading.</p>
-                </div>
-            </div>
-
-
-            <div class="add-folder-container">
-                <form id="addFolderForm" action="{{ url_for('add_folder') }}?parent_id={{ current_folder }}"
-                    method="post">
-                    <input type="text" name="folder_name" placeholder="New folder name" required>
-                    <button type="submit">Add Folder</button>
-                </form>
-            </div>
-
-
-
-
-
-
-
-            <h2>Folders</h2>
-
-            <!-- Always go back to root -->
-            <a href="{{ url_for('home_page') }}" class="home-page-button">
-                🏠 Home
-            </a>
-
-            <!-- If you’re in a subfolder, show an “Up” link -->
-
-            <!-- Folder list -->
-            <ul class="folders-list">
-                {% for folder in folders %}
-                <li>
-                    <!-- In-app navigation: pass folder.id to your route -->
-                    <a href="{{ url_for('home_page', folder_id=folder.id) }}" class="folder-link">
-                        📁 {{ folder.name }}
-                    </a>
-
-                    {% include "_folder_actions.html" %}
-
-                </li>
-                {% endfor %}
-            </ul>
-
-        </aside>
-
-
-        <!-- MAIN CONTENT -->
-        <main class="main-content">
-            <ul class="files-grid">
-                {% for file in files %}
-                <li class="file-card">
-                    <h3>{{ file.name }}</h3>
-                    <div class="meta">
-                        Size: {{ (file.size | default(0) | int / (1024*1024)) | round(3) }} MB
-                    </div>
-                    <div class="actions">
-                        <a class="view" href="{{ file.webViewLink }}" target="_blank">View</a>
-                        <a class="download" href="{{ url_for('download_file', file_id=file.id) }}">Download</a>
-                        <a class="delete"
-                            href="{{ url_for('delete_file',   file_id=file.id) }}?folder_id={{current_folder}} ">Delete</a>
-                    </div>
-                </li>
-                {% endfor %}
-            </ul>
-        </main>
-
+        {% include "components/sidebar.html" %}
+        {% include "components/main_content.html" %}
     </div>
 
     <script src="{{ url_for('static', filename='live_search.js') }}"></script>
+    <script src="{{ url_for('static', filename='upload_error.js')}}
 </body>
 
 </html>

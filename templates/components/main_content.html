@@ -1,0 +1,21 @@
+<main class="main-content">
+    <ul class="files-grid">
+        {% for file in files %}
+        <li class="file-card">
+            <div class="file-icon">
+                <img src="{{ url_for('static', filename='icons/' + file.type + '.png') }}" alt="{{ file.type }} icon">
+            </div>
+            <h3>{{ file.name }}</h3>
+            <div class="meta">
+                Size: {{ (file.size | default(0) | int / (1024*1024)) | round(3) }} MB
+            </div>
+            <div class="actions">
+                <a class="view" href="{{ file.webViewLink }}" target="_blank">View</a>
+                <a class="download" href="{{ url_for('download_file', file_id=file.id) }}">Download</a>
+                <a class="delete"
+                    href="{{ url_for('delete_file', file_id=file.id) }}?folder_id={{ current_folder }}">Delete</a>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</main>
