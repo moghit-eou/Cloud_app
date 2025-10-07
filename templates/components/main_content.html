@@ -2,6 +2,9 @@
     <ul class="files-grid">
         {% for file in files %}
         <li class="file-card">
+            <div class="file-icon">
+                <img src="{{ url_for('static', filename='icons/' + file.type + '.png') }}" alt="{{ file.type }} icon">
+            </div>
             <h3>{{ file.name }}</h3>
             <div class="meta">
                 Size: {{ (file.size | default(0) | int / (1024*1024)) | round(3) }} MB

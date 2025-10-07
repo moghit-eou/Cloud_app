@@ -36,10 +36,33 @@ def file_category(file_obj):
     return "other"
 
 def annotate_files(files):
+    """Detect file types and assign 'type' field for icon display"""
     for f in files:
-        if f.get("mimeType") != "application/vnd.google-apps.folder":
-            f["category"] = file_category(f)
+        mime = f.get('mimeType', '')
+        name = f.get('name', '').lower()
+
+        if mime.startswith('image/'):
+            f['type'] = 'image'
+        elif mime.startswith('video/'):
+            f['type'] = 'video'
+        elif mime.startswith('audio/'):
+            f['type'] = 'audio'
+        elif 'pdf' in mime or name.endswith('.pdf'):
+            f['type'] = 'pdf'
+        elif 'sheet' in mime or 'excel' in mime or name.endswith(('.xls', '.xlsx')):
+            f['type'] = 'excel'
+        elif 'word' in mime or 'document' in mime or name.endswith(('.doc', '.docx')):
+            f['type'] = 'doc'
+        elif 'presentation' in mime or 'powerpoint' in mime or name.endswith(('.ppt', '.pptx')):
+            f['type'] = 'ppt'
+        elif 'text' in mime or name.endswith('.txt'):
+            f['type'] = 'text'
+        elif name.endswith(('.zip', '.rar', '.7z', '.tar', '.gz')):
+            f['type'] = 'archive'
+        else:
+            f['type'] = 'other'
     return files
+
 
 def filter_and_sort(files, wanted_type="all", sort_by="name"):
     wanted = (wanted_type or "all").lower()

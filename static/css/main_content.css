@@ -73,6 +73,20 @@
     gap: 0.5rem;
 }
 
+/* File Icon */
+.file-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.file-icon img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
 .file-card .actions a {
     flex: 1;
     text-align: center;
