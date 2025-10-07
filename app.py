@@ -7,19 +7,39 @@ import googleapiclient.discovery
 from googleapiclient.http import MediaFileUpload
 from io import BytesIO
 from flask import send_file
-from helper import annotate_files, filter_and_sort
+from helper import annotate_files, filter_and_sort , get_folder_path, credentials_to_dict
 from dotenv import load_dotenv
+from datetime import timedelta 
 
 
-
+load_dotenv()
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = os.getenv('FLASK_SECRET_KEY')
 
-CLIENT_SECRETS_FILE = "credentials.json"
+if not app.secret_key:
+    print("CWD:", os.getcwd())
+    print(".env exists:", os.path.exists(".env"))
+    print("Key present:", "FLASK_SECRET_KEY" in os.environ)
+    print("Value:", os.getenv("FLASK_SECRET_KEY"))
+    print () 
+    print (app.secret_key)
+    print () 
+    print ( 'not detected' ) 
+    raise ValueError("LOL FLASK_SECRET_KEY env var not set FIX IT lol")
+    print () 
+    print () 
+
+app.config.update(
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax',
+    PERMANENT_SESSION_LIFETIME=timedelta(hours=24),
+)
+
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
 def get_flow():
@@ -41,38 +61,12 @@ def get_flow():
     return flow
 
 
-def credentials_to_dict(credentials):
-    return {
-        'token': credentials.token,
-        'refresh_token': credentials.refresh_token,
-        'token_uri': credentials.token_uri,
-        'client_id': credentials.client_id,
-        'client_secret': credentials.client_secret,
-        'scopes': credentials.scopes
-    }
+
 def get_service():
     creds = google.oauth2.credentials.Credentials(**session['credentials'])
     return googleapiclient.discovery.build('drive', 'v3', credentials=creds)
-def get_folder_path(service, file_id, folder_cache={}):
-    """Get the full path of a file/folder by traversing parent folders"""
-    if file_id in folder_cache:
-        return folder_cache[file_id]
-    
-    try:
-        file_meta = service.files().get(fileId=file_id, fields='name,parents').execute()
-        file_name = file_meta.get('name', '')
-        parents = file_meta.get('parents', [])
-        
-        if not parents:
-            folder_cache[file_id] = file_name
-            return file_name
-        
-        parent_path = get_folder_path(service, parents[0], folder_cache)
-        full_path = f"{parent_path}/{file_name}" if parent_path else file_name
-        folder_cache[file_id] = full_path
-        return full_path
-    except:
-        return "Unknown"
+
+
 
 
 
@@ -98,9 +92,53 @@ def oauth_callback():
     flow.fetch_token(authorization_response=request.url)
     credentials = flow.credentials
     session['credentials'] = credentials_to_dict(credentials)
+    session.permanent = True
     return redirect(url_for('home_page'))
 
 
+
+
+@app.route('/home', defaults={'folder_id': None})
+@app.route('/home/<folder_id>')
+def home_page(folder_id):
+    if 'credentials' not in session:
+        return redirect(url_for('index'))
+
+    service = get_service()
+
+
+    parent = folder_id if folder_id else 'root'
+
+
+    resp = service.files().list(
+        q=f"'{parent}' in parents and trashed=false",
+        fields="*",
+        pageSize=100
+    ).execute()
+    items = resp.get('files', [])
+
+    folders = [f for f in items if f['mimeType']=='application/vnd.google-apps.folder']
+    files   = [f for f in items if f['mimeType']!='application/vnd.google-apps.folder']
+
+    files = annotate_files(files)
+    files = filter_and_sort(files,
+                            wanted_type=request.args.get('type', 'all'),
+                            sort_by=request.args.get('sort', 'name'))   
+
+    return render_template('home.html',
+                            files=files,
+                            folders=folders,
+                            current_folder=parent,
+                            wanted_type=request.args.get('type', 'all'),
+                            sort_by=request.args.get('sort', 'name')
+                            )
+
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
+    
 @app.route('/search')
 def search():
     """Real-time search endpoint"""
@@ -155,40 +193,6 @@ def search():
         print(f"Search error: {e}")
         return jsonify({'error': 'Search failed'}), 500
 
-@app.route('/home', defaults={'folder_id': None})
-@app.route('/home/<folder_id>')
-def home_page(folder_id):
-    if 'credentials' not in session:
-        return redirect(url_for('index'))
-    service = get_service()
-
-
-    parent = folder_id if folder_id else 'root'
-
-
-    resp = service.files().list(
-        q=f"'{parent}' in parents and trashed=false",
-        fields="*",
-        pageSize=100
-    ).execute()
-    items = resp.get('files', [])
-
-    folders = [f for f in items if f['mimeType']=='application/vnd.google-apps.folder']
-    files   = [f for f in items if f['mimeType']!='application/vnd.google-apps.folder']
-
-    files = annotate_files(files)
-    files = filter_and_sort(files,
-                            wanted_type=request.args.get('type', 'all'),
-                            sort_by=request.args.get('sort', 'name'))   
-
-    return render_template('home.html',
-                            files=files,
-                            folders=folders,
-                            current_folder=parent,
-                            wanted_type=request.args.get('type', 'all'),
-                            sort_by=request.args.get('sort', 'name')
-                            )
-
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if 'credentials' not in session:
@@ -225,6 +229,7 @@ def upload():
 
 @app.route('/delete/<file_id>')
 def delete_file(file_id):
+
     if 'credentials' not in session:
         return redirect(url_for('index'))
 
@@ -287,6 +292,7 @@ def add_folder():
 
 @app.route('/delete_folder/<folder_id>')
 def delete_folder(folder_id):
+
     if 'credentials' not in session:
         return redirect(url_for('index'))
 
@@ -306,6 +312,7 @@ def delete_folder(folder_id):
 def rename_folder(folder_id):
     if 'credentials' not in session:
         return redirect(url_for('index'))
+
     new_name = request.form.get('new_name', '').strip()
     if not new_name:
         flash('Folder name cannot be empty', 'warning')
@@ -320,10 +327,6 @@ def rename_folder(folder_id):
 
 
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(host = "0.0.0.0", port = 5000, debug=True)

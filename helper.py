@@ -52,3 +52,34 @@ def filter_and_sort(files, wanted_type="all", sort_by="name"):
     else:
         files.sort(key=lambda x: x.get("name","").lower())
     return files
+
+def get_folder_path(service, file_id, folder_cache={}):
+    """Get the full path of a file/folder by traversing parent folders"""
+    if file_id in folder_cache:
+        return folder_cache[file_id]
+    
+    try:
+        file_meta = service.files().get(fileId=file_id, fields='name,parents').execute()
+        file_name = file_meta.get('name', '')
+        parents = file_meta.get('parents', [])
+        
+        if not parents:
+            folder_cache[file_id] = file_name
+            return file_name
+        
+        parent_path = get_folder_path(service, parents[0], folder_cache)
+        full_path = f"{parent_path}/{file_name}" if parent_path else file_name
+        folder_cache[file_id] = full_path
+        return full_path
+    except:
+        return "Unknown"
+
+def credentials_to_dict(credentials):
+    return {
+        'token': credentials.token,
+        'refresh_token': credentials.refresh_token,
+        'token_uri': credentials.token_uri,
+        'client_id': credentials.client_id,
+        'client_secret': credentials.client_secret,
+        'scopes': credentials.scopes
+    }
