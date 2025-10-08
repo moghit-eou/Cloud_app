@@ -107,6 +107,11 @@ def home_page(folder_id):
     if 'credentials' not in session:
         return redirect(url_for('index'))
 
+    required_fields =['token' , 'refresh_token', 'token_uri' , 'client_id' , 'client_secret' ]
+    if not all (field in session['credentials'] for field in required_fields):
+        session.clear()
+        return redirect(url_for('authorize'))
+
     service = get_service()
 
 
