@@ -101,6 +101,33 @@
     overflow: hidden;
 }
 
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+    color: #64748b;
+}
+
+.empty-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.empty-state h2 {
+    font-size: 24px;
+    color: #334155;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    font-size: 16px;
+    color: #64748b;
+}
+
 .file-card .actions a::before {
     content: '';
     position: absolute;
@@ -110,6 +137,60 @@
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
     transition: left 0.5s ease;
+}
+
+/* Add this to your main_content.css */
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 3rem auto 2rem;
+    max-width: 1200px;
+}
+
+.page-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 8px;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 500;
+    color: #334155;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    background: transparent;
+    border: none;
+}
+
+.page-number:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.page-number.active {
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .pagination {
+        gap: 4px;
+        margin: 2rem auto 1.5rem;
+    }
+
+    .page-number {
+        min-width: 32px;
+        height: 32px;
+        font-size: 13px;
+    }
 }
 
 .file-card .actions a:hover::before {
@@ -142,6 +223,7 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
+
 
 @media (max-width: 768px) {
     .files-grid {
