@@ -129,16 +129,19 @@ def home_page(folder_id):
     files   = [f for f in items if f['mimeType']!='application/vnd.google-apps.folder']
 
     files = annotate_files(files)
+    filter_type = request.args.get('type', 'all')
+    sort_by    = request.args.get('sort', 'name')
+
     files = filter_and_sort(files,
-                            wanted_type=request.args.get('type', 'all'),
-                            sort_by=request.args.get('sort', 'name'))   
+                            wanted_type=filter_type,
+                            sort_by=sort_by)   
 
     return render_template('home.html',
                             files=files,
                             folders=folders,
                             current_folder=parent,
-                            wanted_type=request.args.get('type', 'all'),
-                            sort_by=request.args.get('sort', 'name')
+                            wanted_type=filter_type,
+                            sort_by=sort_by
                             )
 
 

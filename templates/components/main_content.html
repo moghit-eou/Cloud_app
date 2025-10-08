@@ -1,4 +1,6 @@
 <main class="main-content">
+
+    {% if files %}
     <ul class="files-grid">
         {% for file in files %}
         <li class="file-card">
@@ -18,4 +20,11 @@
         </li>
         {% endfor %}
     </ul>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h2>Nothing here</h2>
+        <p>No files found. Try uploading or changing your filter.</p>
+    </div>
+    {% endif %}
 </main>
