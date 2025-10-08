@@ -57,6 +57,16 @@ def get_flow():
 
 def get_service():
     creds = google.oauth2.credentials.Credentials(**session['credentials'])
+    if creds.expired and creds.refresh_token:
+        try:
+            from google.auth.transport.requests import Request
+            creds.refresh(Request())
+            session['credentials'] = credentials_to_dict(creds)
+        except Exception as e:
+            print(f"For god sake , the problem is : {e}")
+            session.pop('credentials', None)
+            return redirect(url_for('index'))
+
     return googleapiclient.discovery.build('drive', 'v3', credentials=creds)
 
 
@@ -73,7 +83,7 @@ def index():
 @app.route('/authorize')
 def authorize():
     flow = get_flow()
-    auth_url, state = flow.authorization_url(access_type='offline', include_granted_scopes='true')
+    auth_url, state = flow.authorization_url(access_type='offline', include_granted_scopes='true',prompt='consent')
     session['state'] = state
     return redirect(auth_url)
 
@@ -96,6 +106,11 @@ def oauth_callback():
 def home_page(folder_id):
     if 'credentials' not in session:
         return redirect(url_for('index'))
+
+    required_fields =['token' , 'refresh_token', 'token_uri' , 'client_id' , 'client_secret' ]
+    if not all (field in session['credentials'] for field in required_fields):
+        session.clear()
+        return redirect(url_for('authorize'))
 
     service = get_service()
 
