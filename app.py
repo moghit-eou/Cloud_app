@@ -101,48 +101,72 @@ def oauth_callback():
 
 
 
+# Replace your home_page route with this efficient version:
+
 @app.route('/home', defaults={'folder_id': None})
 @app.route('/home/<folder_id>')
 def home_page(folder_id):
     if 'credentials' not in session:
         return redirect(url_for('index'))
 
-    required_fields =['token' , 'refresh_token', 'token_uri' , 'client_id' , 'client_secret' ]
-    if not all (field in session['credentials'] for field in required_fields):
+    required_fields = ['token', 'refresh_token', 'token_uri', 'client_id', 'client_secret']
+    if not all(field in session['credentials'] for field in required_fields):
         session.clear()
         return redirect(url_for('authorize'))
 
     service = get_service()
-
-
     parent = folder_id if folder_id else 'root'
-
-
-    resp = service.files().list(
-        q=f"'{parent}' in parents and trashed=false",
-        fields="*",
+    
+    # Pagination settings
+    page = request.args.get('page', 1, type=int)
+    per_page = 16
+    
+    # First, get ONLY folders (always show all folders)
+    folder_resp = service.files().list(
+        q=f"'{parent}' in parents and trashed=false and mimeType='application/vnd.google-apps.folder'",
+        fields="files(id,name,mimeType)",
         pageSize=100
     ).execute()
-    items = resp.get('files', [])
-
-    folders = [f for f in items if f['mimeType']=='application/vnd.google-apps.folder']
-    files   = [f for f in items if f['mimeType']!='application/vnd.google-apps.folder']
-
-    files = annotate_files(files)
+    folders = folder_resp.get('files', [])
+    
+    # Get filter/sort params
     filter_type = request.args.get('type', 'all')
-    sort_by    = request.args.get('sort', 'name')
-
-    files = filter_and_sort(files,
-                            wanted_type=filter_type,
-                            sort_by=sort_by)   
+    sort_by = request.args.get('sort', 'name')
+    
+    # Build query for files only (no folders)
+    file_query = f"'{parent}' in parents and trashed=false and mimeType!='application/vnd.google-apps.folder'"
+    
+    # Fetch files with pagination - fetch extra to handle potential filtering
+    fetch_amount = per_page * 3  # Buffer for filtering
+    file_resp = service.files().list(
+        q=file_query,
+        fields="files(id,name,mimeType,size,webViewLink,parents)",
+        pageSize=fetch_amount,
+        orderBy='name' if sort_by == 'name' else 'modifiedTime desc'
+    ).execute()
+    
+    files = file_resp.get('files', [])
+    files = annotate_files(files)
+    files = filter_and_sort(files, wanted_type=filter_type, sort_by=sort_by)
+    
+    # Pagination logic
+    total_files = len(files)
+    total_pages = max(1, (total_files + per_page - 1) // per_page)
+    page = max(1, min(page, total_pages))
+    
+    # Get page slice
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_files = files[start:end]
 
     return render_template('home.html',
-                            files=files,
-                            folders=folders,
-                            current_folder=parent,
-                            wanted_type=filter_type,
-                            sort_by=sort_by
-                            )
+                          files=paginated_files,
+                          folders=folders,
+                          current_folder=parent,
+                          wanted_type=filter_type,
+                          sort_by=sort_by,
+                          current_page=page,
+                          total_pages=total_pages)
 
 
 @app.route('/logout')
