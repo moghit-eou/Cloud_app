@@ -216,3 +216,79 @@
         width: 100%;
     }
 }
+
+/* Add these styles to your existing sidebar.css */
+
+.bin-page-button {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 15px;
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(220, 53, 69, 0.3);
+    border: none;
+}
+
+.bin-page-button:hover {
+    background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.4);
+}
+
+.bin-page-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+}
+
+/* Update the home button to match styling */
+.home-page-button {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
+    border: none;
+}
+
+.home-page-button:hover {
+    background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+}
+
+.home-page-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+
+/* Section headers in sidebar */
+.sidebar h2 {
+    font-size: 14px;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 20px 0 10px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e9ecef;
+    font-weight: 600;
+}
+
+/* First h2 should have less top margin */
+.sidebar h2:first-of-type {
+    margin-top: 0;
+}

@@ -23,9 +23,12 @@
         </form>
     </div>
 
-    <h2>Folders</h2>
+    <h2>Navigation</h2>
 
     <a href="{{ url_for('home_page') }}" class="home-page-button">🏠 Home</a>
+    <a href="{{ url_for('bin_page') }}" class="bin-page-button">🗑️ Bin</a>
+
+    <h2>Folders</h2>
 
     <ul class="folders-list">
         {% for folder in folders %}
