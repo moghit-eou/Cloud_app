@@ -5,7 +5,7 @@ import google_auth_oauthlib.flow
 import google.oauth2.credentials
 import googleapiclient.discovery
 from googleapiclient.http import MediaIoBaseDownload
-from googleapiclient.http import MediaFileUpload
+from googleapiclient.http import MediaIoBaseUpload
 from io import BytesIO
 from flask import send_file
 from helper import annotate_files, filter_and_sort , get_folder_path, credentials_to_dict
@@ -230,50 +230,33 @@ def search():
         print(f"Search error: {e}")
         return jsonify({'error': 'Search failed'}), 500
 
-@app.route('/upload', methods=['GET', 'POST'])
+
+@app.route('/upload', methods=['POST'])
 def upload():
     if 'credentials' not in session:
         return redirect(url_for('index'))
 
-    service = get_service()
-    if not hasattr(service, 'files'):
-        return service
-
-
-    #uploaded_file = request.files['uploaded_file']
     uploaded_file = request.files.get('uploaded_file')
-
-    
     if not uploaded_file:
         return redirect(url_for('home_page'))
 
+    file_stream = BytesIO(uploaded_file.read())
+    file_stream.seek(0)
 
-    #uploaded_file.save(uploaded_file.filename)
-    
+    service = get_service()
     file_metadata = {'name': uploaded_file.filename}
     folder_id = request.args.get('folder_id')
-    
     if folder_id:
         file_metadata['parents'] = [folder_id]
 
-    file_stream = BytesIO(uploaded_file.read())
-
-    #media = MediaFileUpload(uploaded_file.filename, resumable=True)
-
-    media = MediaFileUpload(
-        file_stream ,
-        mimetype=uploaded_file.content_type or  'application/octet-stream',
+    media = MediaIoBaseUpload(
+        file_stream,
+        mimetype=uploaded_file.content_type or 'application/octet-stream',
         resumable=True
     )
-    
-    service.files().create(
-        body=file_metadata,
-        media_body=media,
-        fields='id'
-    ).execute()
-    #media._fd.close()  
-    #os.remove(uploaded_file.filename)  
-    return redirect(url_for('home_page' , folder_id =folder_id))
+
+    service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+    return redirect(url_for('home_page', folder_id=folder_id))
 
 @app.route('/delete/<file_id>')
 def delete_file(file_id):
@@ -382,7 +365,7 @@ def bin_page():
     
     service = get_service()
     
-     try:
+    try:
         # Get all trashed items
         results = service.files().list(
             q="trashed=true",

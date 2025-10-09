@@ -1,5 +1,3 @@
-/* static/css/main_content.css */
-
 .main-content {
     display: flex;
     flex-direction: column;
@@ -34,7 +32,6 @@
     border-radius: var(--radius-l);
     transition: all var(--transition-base);
     cursor: pointer;
-    position: relative;
 }
 
 .file-card:hover {
