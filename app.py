@@ -230,33 +230,40 @@ def search():
         print(f"Search error: {e}")
         return jsonify({'error': 'Search failed'}), 500
 
-
 @app.route('/upload', methods=['POST'])
 def upload():
     if 'credentials' not in session:
         return redirect(url_for('index'))
 
-    uploaded_file = request.files.get('uploaded_file')
-    if not uploaded_file:
+    service = get_service()
+    folder_id = request.args.get('folder_id')
+    uploaded_files = request.files.getlist('uploaded_file')
+
+    if not uploaded_files:
         return redirect(url_for('home_page'))
 
-    file_stream = BytesIO(uploaded_file.read())
-    file_stream.seek(0)
+    for uploaded_file in uploaded_files:
+        file_metadata = {'name': uploaded_file.filename}
+        if folder_id:
+            file_metadata['parents'] = [folder_id]
 
-    service = get_service()
-    file_metadata = {'name': uploaded_file.filename}
-    folder_id = request.args.get('folder_id')
-    if folder_id:
-        file_metadata['parents'] = [folder_id]
+        file_stream = BytesIO(uploaded_file.read())
+        file_stream.seek(0)
 
-    media = MediaIoBaseUpload(
-        file_stream,
-        mimetype=uploaded_file.content_type or 'application/octet-stream',
-        resumable=True
-    )
+        media = MediaIoBaseUpload(
+            file_stream,
+            mimetype=uploaded_file.content_type or 'application/octet-stream',
+            resumable=True
+        )
 
-    service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+        service.files().create(
+            body=file_metadata,
+            media_body=media,
+            fields='id'
+        ).execute()
+
     return redirect(url_for('home_page', folder_id=folder_id))
+
 
 @app.route('/delete/<file_id>')
 def delete_file(file_id):
