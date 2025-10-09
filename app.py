@@ -4,12 +4,14 @@ import json
 import google_auth_oauthlib.flow
 import google.oauth2.credentials
 import googleapiclient.discovery
+from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.http import MediaFileUpload
 from io import BytesIO
 from flask import send_file
 from helper import annotate_files, filter_and_sort , get_folder_path, credentials_to_dict
 from dotenv import load_dotenv
 from datetime import timedelta 
+
 
 
 
@@ -238,13 +240,15 @@ def upload():
         return service
 
 
-    uploaded_file = request.files['uploaded_file']
+    #uploaded_file = request.files['uploaded_file']
+    uploaded_file = request.files.get('uploaded_file')
 
     
     if not uploaded_file:
         return redirect(url_for('home_page'))
 
-    uploaded_file.save(uploaded_file.filename)
+
+    #uploaded_file.save(uploaded_file.filename)
     
     file_metadata = {'name': uploaded_file.filename}
     folder_id = request.args.get('folder_id')
@@ -252,14 +256,23 @@ def upload():
     if folder_id:
         file_metadata['parents'] = [folder_id]
 
-    media = MediaFileUpload(uploaded_file.filename, resumable=True)
+    file_stream = BytesIO(uploaded_file.read())
+
+    #media = MediaFileUpload(uploaded_file.filename, resumable=True)
+
+    media = MediaFileUpload(
+        file_stream ,
+        mimetype=uploaded_file.content_type or  'application/octet-stream',
+        resumable=True
+    )
+    
     service.files().create(
         body=file_metadata,
         media_body=media,
         fields='id'
     ).execute()
-    media._fd.close()  
-    os.remove(uploaded_file.filename)  
+    #media._fd.close()  
+    #os.remove(uploaded_file.filename)  
     return redirect(url_for('home_page' , folder_id =folder_id))
 
 @app.route('/delete/<file_id>')
@@ -369,8 +382,7 @@ def bin_page():
     
     service = get_service()
     
-    print("\n\n ____________ENTRED BIN PAGE ____________\n\n")
-    try:
+     try:
         # Get all trashed items
         results = service.files().list(
             q="trashed=true",
@@ -379,8 +391,7 @@ def bin_page():
             orderBy='modifiedTime desc'
         ).execute()
 
-        print("\n\n ____________GOT RESULTS ____________\n\n")
-        
+         
         items = results.get('files', [])
         
         # Annotate items to add type information
