@@ -64,7 +64,7 @@
     right: 0;
     max-height: 400px;
     overflow-y: auto;
-    background-color: var(--card);
+    background-color: white;
     border: 1px solid var(--border);
     border-radius: var(--radius-l);
     box-shadow: var(--shadow-xl);

@@ -4,7 +4,7 @@
 
         <form id="uploadForm" action="{{ url_for('upload') }}?folder_id={{ current_folder }}" method="post"
             enctype="multipart/form-data">
-            <input type="file" id="uploaded_file" name="uploaded_file">
+            <input type="file" id="uploaded_file" name="uploaded_file" multiple>
             <button type="submit">Upload</button>
         </form>
     </div>
