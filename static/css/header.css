@@ -22,7 +22,6 @@
     }
 }
 
-/* Search Container */
 .search-container {
     position: relative;
     flex: 1 1 300px;
@@ -55,7 +54,7 @@
     color: var(--muted);
 }
 
-/* Search Suggestions Dropdown */
+
 #suggestions {
     display: none;
     position: absolute;

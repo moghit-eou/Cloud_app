@@ -472,6 +472,9 @@ def empty_bin():
     return redirect(url_for('bin_page'))
 #___________TEST___________
 
+@app.route('/test')
+def test_page():
+    return render_template('test.html')
 
 if __name__ == '__main__':
     app.run(host = "0.0.0.0", port = 5000, debug=True)
