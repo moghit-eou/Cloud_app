@@ -8,3 +8,4 @@ push.sh
 __pycache__/
 *.py[cod]
 temp_creds.json
+test.*
