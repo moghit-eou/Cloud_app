@@ -427,6 +427,7 @@ def delete_permanently(file_id):
     service = get_service()
     
     try:
+        # Permanently delete the item
         service.files().delete(fileId=file_id).execute()
         flash('Item permanently deleted', 'success')
     except Exception as e:
@@ -469,12 +470,7 @@ def empty_bin():
         flash('Error emptying bin', 'error')
     
     return redirect(url_for('bin_page'))
-
-# Add this new route to your app.py file
-
-@app.route('/upload_folder', methods=['POST'])
-def upload_folder():
-    return jsonify({'success': True})
+#___________TEST___________
 
 @app.route('/test')
 def test_page():

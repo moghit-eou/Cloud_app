@@ -5,13 +5,7 @@
         <form id="uploadForm" action="{{ url_for('upload') }}?folder_id={{ current_folder }}" method="post"
             enctype="multipart/form-data">
             <input type="file" id="uploaded_file" name="uploaded_file" multiple>
-            <button type="submit">📄 Upload Files</button>
-        </form>
-
-        <form id="uploadFolderForm" action="{{ url_for('upload_folder') }}?folder_id={{ current_folder }}" method="post"
-            enctype="multipart/form-data">
-            <input type="file" id="folder_input" name="files[]" webkitdirectory directory multiple>
-            <button type="submit">📁 Upload Folder</button>
+            <button type="submit">Upload</button>
         </form>
     </div>
 

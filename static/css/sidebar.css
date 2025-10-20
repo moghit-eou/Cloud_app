@@ -31,15 +31,13 @@
     background-color: rgba(59, 130, 246, 0.05);
 }
 
-#uploadForm,
-#uploadFolderForm {
+#uploadForm {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
 }
 
-#uploadForm input[type="file"],
-#uploadFolderForm input[type="file"] {
+#uploadForm input[type="file"] {
     font-size: var(--text-sm);
     padding: var(--space-2);
     border: 1px solid var(--border);
@@ -49,19 +47,16 @@
     transition: all var(--transition-base);
 }
 
-#uploadForm input[type="file"]:hover,
-#uploadFolderForm input[type="file"]:hover {
+#uploadForm input[type="file"]:hover {
     border-color: var(--accent);
 }
 
-#uploadForm input[type="file"]:focus-visible,
-#uploadFolderForm input[type="file"]:focus-visible {
+#uploadForm input[type="file"]:focus-visible {
     outline: none;
     box-shadow: var(--shadow-focus);
 }
 
-#uploadForm button,
-#uploadFolderForm button {
+#uploadForm button {
     padding: var(--space-2) var(--space-4);
     font-size: var(--text-sm);
     font-weight: 500;
@@ -74,65 +69,19 @@
     min-height: 44px;
 }
 
-#uploadForm button:hover,
-#uploadFolderForm button:hover {
+#uploadForm button:hover {
     background-color: var(--accent-hover);
     box-shadow: var(--shadow-md);
 }
 
-#uploadForm button:focus-visible,
-#uploadFolderForm button:focus-visible {
+#uploadForm button:focus-visible {
     outline: none;
     box-shadow: var(--shadow-focus);
 }
 
-#uploadForm button:disabled,
-#uploadFolderForm button:disabled {
+#uploadForm button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-}
-
-/* Folder upload specific styling */
-#uploadFolderBtn {
-    background-color: #10b981;
-    border-color: #10b981;
-}
-
-#uploadFolderBtn:hover:not(:disabled) {
-    background-color: #059669;
-}
-
-/* Progress Bar */
-.upload-progress {
-    margin-top: var(--space-2);
-    padding: var(--space-3);
-    background-color: var(--card);
-    border-radius: var(--radius-m);
-    border: 1px solid var(--border);
-}
-
-.progress-bar {
-    width: 100%;
-    height: 8px;
-    background-color: var(--surface);
-    border-radius: var(--radius-s);
-    overflow: hidden;
-    margin-bottom: var(--space-2);
-}
-
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent) 0%, #10b981 100%);
-    border-radius: var(--radius-s);
-    transition: width 0.3s ease;
-    width: 0%;
-}
-
-#progressText {
-    font-size: var(--text-xs);
-    color: var(--muted);
-    margin: 0;
-    text-align: center;
 }
 
 /* Error Modal - FIXED Z-INDEX */
