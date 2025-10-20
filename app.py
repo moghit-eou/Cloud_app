@@ -427,7 +427,6 @@ def delete_permanently(file_id):
     service = get_service()
     
     try:
-        # Permanently delete the item
         service.files().delete(fileId=file_id).execute()
         flash('Item permanently deleted', 'success')
     except Exception as e:
@@ -470,7 +469,93 @@ def empty_bin():
         flash('Error emptying bin', 'error')
     
     return redirect(url_for('bin_page'))
-#___________TEST___________
+
+# Add this new route to your app.py file
+
+@app.route('/upload_folder', methods=['POST'])
+def upload_folder():
+    if 'credentials' not in session:
+        return redirect(url_for('index'))
+
+    service = get_service()
+    folder_id = request.args.get('folder_id')
+    uploaded_files = request.files.getlist('files[]')
+
+    if not uploaded_files:
+        return redirect(url_for('home_page'))
+
+    # Dictionary to cache created folders {relative_path: folder_id}
+    folder_cache = {}
+    
+    for uploaded_file in uploaded_files:
+        # Get the relative path (browser provides this for folder uploads)
+        relative_path = uploaded_file.filename
+        
+        # Extract the directory path from the relative path
+        path_parts = relative_path.split('/')
+        file_name = path_parts[-1]
+        folder_path_parts = path_parts[:-1]
+        
+        # Navigate/create the folder structure
+        current_parent = folder_id if folder_id else 'root'
+        
+        for i, folder_name in enumerate(folder_path_parts):
+            # Build the path up to this point
+            partial_path = '/'.join(folder_path_parts[:i+1])
+            
+            # Check if we've already created this folder
+            if partial_path in folder_cache:
+                current_parent = folder_cache[partial_path]
+            else:
+                # Search for existing folder
+                query = f"name='{folder_name}' and '{current_parent}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false"
+                results = service.files().list(
+                    q=query,
+                    spaces='drive',
+                    fields='files(id, name)',
+                    pageSize=1
+                ).execute()
+                
+                existing_folders = results.get('files', [])
+                
+                if existing_folders:
+                    # Folder exists, use it
+                    current_parent = existing_folders[0]['id']
+                else:
+                    # Create new folder
+                    folder_metadata = {
+                        'name': folder_name,
+                        'mimeType': 'application/vnd.google-apps.folder',
+                        'parents': [current_parent]
+                    }
+                    created_folder = service.files().create(
+                        body=folder_metadata,
+                        fields='id'
+                    ).execute()
+                    current_parent = created_folder['id']
+                
+                # Cache the folder ID
+                folder_cache[partial_path] = current_parent
+        
+        # Upload the file to the final parent folder
+        file_metadata = {'name': file_name, 'parents': [current_parent]}
+        
+        file_stream = BytesIO(uploaded_file.read())
+        file_stream.seek(0)
+        
+        media = MediaIoBaseUpload(
+            file_stream,
+            mimetype=uploaded_file.content_type or 'application/octet-stream',
+            resumable=True
+        )
+        
+        service.files().create(
+            body=file_metadata,
+            media_body=media,
+            fields='id'
+        ).execute()
+
+    return redirect(url_for('home_page', folder_id=folder_id))
 
 @app.route('/test')
 def test_page():
