@@ -88,32 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!file) {
             return { valid: false, message: '🚨 Please choose a file before uploading.' };
         }
-        /* const maxSize = 10 * 1024 * 1024; // 10MB
-         const allowedTypes = [
-           // Images
-           'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
-           // Documents
-           'application/pdf', 'text/plain', 'application/msword',
-           'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-           // Archives
-           'application/zip', 'application/x-rar-compressed',
-           // Others
-           'text/csv', 'application/json'
-         ]; 
 
-        if (file.size > maxSize) {
-            return {
-                valid: false,
-                message: `📏 File size too large. Maximum allowed size is ${(maxSize / (1024 * 1024)).toFixed(1)}MB.`
-            };
-        }
-
-        if (!allowedTypes.includes(file.type)) {
-            return {
-                valid: false,
-                message: `🚫 File type not allowed. Please select a valid file type.`
-            };
-        } */
 
         return { valid: true };
     }
@@ -157,21 +132,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 30000); // 30 second timeout
     });
 
-    // File input change handler with preview
     fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
-        hideInlineError(); // Hide any previous errors
+        hideInlineError();
 
         if (file) {
-            // Reset error styling
             fileInput.style.borderColor = '';
             fileInput.style.background = '';
 
-            // Show file info
             const fileInfo = `Selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
             showInlineError(`✅ ${fileInfo}`, false);
 
-            // Validate file immediately
             const validation = validateFile(file);
             if (!validation.valid) {
                 setTimeout(() => {
@@ -183,24 +154,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Enhanced modal close handlers
     closeBtn.addEventListener('click', hideModal);
 
-    // Click outside to close
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             hideModal();
         }
     });
 
-    // Escape key to close modal
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && modal.classList.contains('show')) {
             hideModal();
         }
     });
 
-    // Drag and drop functionality
     const uploadContainer = document.querySelector('.upload-container');
 
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -238,13 +205,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (files.length > 0) {
             fileInput.files = files;
-            // Trigger change event
             const event = new Event('change', { bubbles: true });
             fileInput.dispatchEvent(event);
         }
     }
 
-    // Add CSS for modal slide out animation
     const style = document.createElement('style');
     style.textContent = `
     @keyframes modalSlideOut {

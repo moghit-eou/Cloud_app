@@ -1,4 +1,3 @@
-
 const loader = document.getElementById('global-loader');
 
 window.addEventListener('load', () => {
