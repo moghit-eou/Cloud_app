@@ -10,7 +10,6 @@
     min-height: 600px;
 }
 
-/* Files Grid */
 .files-grid {
     list-style: none;
     display: grid;
@@ -20,7 +19,6 @@
     padding: 0;
 }
 
-/* File Card */
 .file-card {
     display: flex;
     flex-direction: column;
@@ -45,7 +43,6 @@
     outline-offset: 2px;
 }
 
-/* File Icon */
 .file-icon {
     display: flex;
     align-items: center;
