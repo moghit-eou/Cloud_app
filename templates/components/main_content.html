@@ -18,9 +18,6 @@
                     href="{{ url_for('delete_file', file_id=file.id) }}?folder_id={{ current_folder }}">Delete</a>
             </div>
         </li>
-        <!-- Add this after your files grid in main_content.html, before closing </main> -->
-
-
         {% endfor %}
         {% if total_pages > 1 %}
         <div class="pagination">
